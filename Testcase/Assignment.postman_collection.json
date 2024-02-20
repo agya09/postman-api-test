@@ -1,0 +1,1718 @@
+{
+	"info": {
+		"_postman_id": "303c6807-288e-4114-a206-57759af2d1ec",
+		"name": "Assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32149829",
+		"_collection_link": "https://gold-firefly-443163.postman.co/workspace/Agya-Workspace~581481e0-6abb-4e6a-aa4e-7fcd412dacea/collection/32149829-303c6807-288e-4114-a206-57759af2d1ec?action=share&source=collection_link&creator=32149829"
+	},
+	"item": [
+		{
+			"name": "List of all posts",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const commonTests = () => {",
+							"    ",
+							"",
+							"    pm.test(\"Content type is present in headers.\", function(){",
+							"        var reqHeader = pm.request.getHeaders();",
+							"        // console.log(reqHeader)",
+							"        var contType = reqHeader['Content-Type'];",
+							"        // console.log(contType)",
+							"        pm.expect(contType).to.include('application/json');",
+							"    });",
+							"",
+							"    pm.test(\"Response time is less than 500ms.\",function(){",
+							"        pm.expect(pm.response.responseTime).to.be.below(500);",
+							"    });",
+							"",
+							"    pm.test(\"Response is in json format.\", function(){",
+							"        pm.response.to.be.json;",
+							"    });",
+							"",
+							"    pm.test(\"No error message is present.\", function(){",
+							"        pm.expect(pm.response.json()).to.not.have.property('error');",
+							"    });",
+							"",
+							"}",
+							"",
+							"var status = () => {",
+							"    pm.test(\"Status code is 200 Ok.\", function(){",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"}",
+							"",
+							"pm.environment.set(\"commonTests\", commonTests.toString());",
+							"pm.environment.set(\"status\", status.toString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"",
+							"",
+							"pm.test(\"The reponse body has expected properties.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('body').to.be.a('string');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/posts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a single post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get('status'))();",
+							"eval(pm.environment.get('commonTests'))();",
+							"",
+							"pm.test(\"Post has expected properties.\", function(){",
+							"    var res = pm.response.json();",
+							"    // console.log(res)",
+							"    pm.expect(res).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res).to.have.property('body').to.be.a('string');",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\": ",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"        \"type\":\"string\"",
+							"    }",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test(\"Valid data is returned in response.\", function(){",
+							"   var res = pm.response.json();",
+							"   pm.expect(res.userId).to.eql(1); ",
+							"   pm.expect(res.title).to.eql(\"qui est esse\");",
+							"   pm.expect(res.body).to.eql(\"est rerum tempore vitae\\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\\nqui aperiam non debitis possimus qui neque nisi nulla\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/posts/:id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get albums of a user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get('status'))();",
+							"eval(pm.environment.get('commonTests'))();",
+							"",
+							"pm.test(\"Response body has expected properties.\", function(){",
+							"    var res = pm.response.json();",
+							"    // console.log(res)",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\": ",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    }",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json;",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/albums",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"albums"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new post",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"New post is successfully created.\", function(){",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"eval(pm.environment.get('commonTests'))();",
+							"",
+							"pm.test(\"Created post has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res).to.have.property('body').to.be.a('string');",
+							"    pm.expect(res).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res).to.have.property('id').to.be.a('number');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\": ",
+							"    {",
+							"         \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"New task assigned\",\n    \"body\":\"The task should be completed till Tuesday 3 pm.\",\n    \"userId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/posts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a single post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get('status'))();",
+							"eval(pm.environment.get('commonTests'))();",
+							"",
+							"pm.test(\"Updated post has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res).to.have.property('body').to.be.a('string');",
+							"    pm.expect(res).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res).to.have.property('id').to.be.a('number');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\": ",
+							"    {",
+							"         \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":100,\n    \"title\": \"Updated post by me\",\n    \"body\": \"New body description for the post.\",\n    \"userId\":9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/posts/:id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update title of a single post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get(\"status\"))();",
+							"",
+							"pm.test(\"Patched post has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res).to.have.property('body').to.be.a('string');",
+							"    pm.expect(res).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res).to.have.property('id').to.be.a('number');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\": ",
+							"    {",
+							"         \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\":\"Hy this is new post title!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/posts/:id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"status\"))();",
+							"",
+							"eval(pm.environment.get(\"commonTests\"))();"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/posts/:id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "101"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter post by user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Filtered post has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('body').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"            \"type\":\"string\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/posts/?userId=9",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						""
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "9"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter comments of a particular post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Comments of the post has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('postId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('name').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('email').to.be.a('string')",
+							"    pm.expect(res[0]).to.have.property('body').to.be.a('string');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"postID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"name\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"email\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"            \"type\":\"string\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/posts/:postId/comments",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						":postId",
+						"comments"
+					],
+					"variable": [
+						{
+							"key": "postId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get photos of particular album",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Filtered photos has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('albumId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('url').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('thumbnailUrl').to.be.a('string');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"albumId\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"url\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"thumbnailUrl\":{",
+							"        \"type\":\"string\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/albums/:albumId/photos",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"albums",
+						":albumId",
+						"photos"
+					],
+					"variable": [
+						{
+							"key": "albumId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get todos of a user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Todos have expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('completed').to.be.a('boolean');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"completed\":{",
+							"            \"type\":\"boolean\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/todos",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"todos"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get posts of a USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Post has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('body').to.be.a('string');",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"            \"type\":\"string\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/posts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"posts"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all comments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Comments of the post has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('postId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('name').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('email').to.be.a('string')",
+							"    pm.expect(res[0]).to.have.property('body').to.be.a('string');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"postID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"name\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"email\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"            \"type\":\"string\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/comments",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all albums",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get('status'))();",
+							"eval(pm.environment.get('commonTests'))();",
+							"",
+							"pm.test(\"Response body has expected properties.\", function(){",
+							"    var res = pm.response.json();",
+							"    // console.log(res)",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\": ",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    }",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/albums",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"albums"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all photos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Photos have expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('albumId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('url').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('thumbnailUrl').to.be.a('string');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"albumId\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"url\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"thumbnailUrl\":{",
+							"        \"type\":\"string\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/photos",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"photos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all todos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Todos have expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('completed').to.be.a('boolean');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"completed\":{",
+							"            \"type\":\"boolean\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/todos",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Users have expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('name').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('username').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('email').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('address').to.be.an('object');",
+							"    pm.expect(res[0]).to.have.property('phone').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('website').to.be.a('string');",
+							"    pm.expect(res[0]).to.have.property('company').to.be.an('object');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\":",
+							"    {",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"name\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"username\":{",
+							"            \"type\":\"string\"",
+							"        },",
+							"    \"email\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"address\":{",
+							"        \"type\":\"object\"",
+							"    },",
+							"    \"phone\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"website\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"company\":{",
+							"        \"type\":\"object\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter comments by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Comment has expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res).to.have.property('postId').to.be.a('number');",
+							"    pm.expect(res).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res).to.have.property('name').to.be.a('string');",
+							"    pm.expect(res).to.have.property('email').to.be.a('string')",
+							"    pm.expect(res).to.have.property('body').to.be.a('string');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\":",
+							"    {",
+							"    \"postID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"name\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"email\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"body\":{",
+							"            \"type\":\"string\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/comments/:commentId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":commentId"
+					],
+					"variable": [
+						{
+							"key": "commentId",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get albums of particular user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get('status'))();",
+							"eval(pm.environment.get('commonTests'))();",
+							"",
+							"pm.test(\"Response body has expected properties.\", function(){",
+							"    var res = pm.response.json();",
+							"    // console.log(res)",
+							"    pm.expect(res[0]).to.have.property('userId').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res[0]).to.have.property('title').to.be.a('string');",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"array\",",
+							"    \"properties\": ",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    }",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/albums/?userId=3",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"albums",
+						""
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter photos by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Photos have expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res).to.have.property('albumId').to.be.a('number');",
+							"    pm.expect(res).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res).to.have.property('url').to.be.a('string');",
+							"    pm.expect(res).to.have.property('thumbnailUrl').to.be.a('string');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\":",
+							"    {",
+							"    \"albumId\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"url\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"thumbnailUrl\":{",
+							"        \"type\":\"string\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/photos/:photoId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"photos",
+						":photoId"
+					],
+					"variable": [
+						{
+							"key": "photoId",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter todo by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Todos have expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res).to.have.property('title').to.be.a('string');",
+							"    pm.expect(res).to.have.property('completed').to.be.a('boolean');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\":",
+							"    {",
+							"    \"userID\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"title\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"completed\":{",
+							"            \"type\":\"boolean\"",
+							"        }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/todos/:todoId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"todos",
+						":todoId"
+					],
+					"variable": [
+						{
+							"key": "todoId",
+							"value": "6"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter user by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get(\"commonTests\"))();",
+							"eval(pm.environment.get('status'))();",
+							"pm.test(\"Users have expected properties in response.\", function(){",
+							"    var res = pm.response.json();",
+							"    pm.expect(res).to.have.property('id').to.be.a('number');",
+							"    pm.expect(res).to.have.property('name').to.be.a('string');",
+							"    pm.expect(res).to.have.property('username').to.be.a('string');",
+							"    pm.expect(res).to.have.property('email').to.be.a('string');",
+							"    pm.expect(res).to.have.property('address').to.be.an('object');",
+							"    pm.expect(res).to.have.property('phone').to.be.a('string');",
+							"    pm.expect(res).to.have.property('website').to.be.a('string');",
+							"    pm.expect(res).to.have.property('company').to.be.an('object');",
+							"    ",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\":\"object\",",
+							"    \"properties\":",
+							"    {",
+							"    \"id\":{",
+							"        \"type\":\"number\"",
+							"    },",
+							"    \"name\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"username\":{",
+							"            \"type\":\"string\"",
+							"        },",
+							"    \"email\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"address\":{",
+							"        \"type\":\"object\"",
+							"    },",
+							"    \"phone\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"website\":{",
+							"        \"type\":\"string\"",
+							"    },",
+							"    \"company\":{",
+							"        \"type\":\"object\"",
+							"    }",
+							"   ",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"The schema is a valid json schema.\",function(){",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=UTF-8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://jsonplaceholder.typicode.com",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "postman-assignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "newman run Testcase/Assignment.postman_collection.json -e Env/AssignmentEnv.postman_environment.json",
+    "new_test": "newman run Testcase/Assignment.postman_collection.json -e Env/AssignmentEnv.postman_environment.json -r htmlextra --reporter-htmlextra-export ./Report/Postman-assignment-report.html",
+    "multi_test": "newman run Testcase/Assignment.postman_collection.json -e Env/AssignmentEnv.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export ./Report/Postman-assignment-multitest-report.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "newman": "^6.1.1"
+  },
+  "devDependencies": {
+    "newman-reporter-htmlextra": "^1.23.0"
+  }
+}
