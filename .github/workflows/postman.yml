@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: RUN SuperTest API Testing
-        run: npm new_test
+        run: npm run new_test
 
       - name: Archive Postman test report
         uses: actions/upload-artifact@v3
